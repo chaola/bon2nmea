@@ -198,9 +198,11 @@ class MainActivity : AppCompatActivity() {
         val header = ByteArray(8)
         inputStream.read(header)
 
+        var prevLocation: LocationData? = null
         val chunk = ByteArray(26)
         while (inputStream.read(chunk) >= 0) {
-            val location = LocationData(chunk)
+            val location = LocationData(chunk, prevLocation)
+            prevLocation = location
             writer.write(location.getNmea())
             writer.newLine()
         }
