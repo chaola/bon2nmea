@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Bon2Nmea</string>
+    <string name="app_title">BON to NMEA converter</string>
+    <string name="button_open">Open...</string>
+    <string name="button_save">Save as...</string>
+    <string name="open_title">Select BON file</string>
+    <string name="error_file_not_specified">ファイルが指定されていません</string>
+    <string name="error_invalid_ext">BONファイルではありません</string>
+    <string name="message_complete">保存しました</string>
+</resources>
