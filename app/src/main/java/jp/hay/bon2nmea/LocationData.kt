@@ -15,10 +15,15 @@ class LocationData {
     var m_speed: Int
     var m_course: Int = 0
 
+    enum class DataVersion {
+        BON1,
+        BON4,
+    }
+
     /**
      * chunkを用いて初期化する
      */
-    constructor(chunk: ByteArray, prevLocation: LocationData?) {
+    constructor(chunk: ByteArray, prevLocation: LocationData?, ver: DataVersion) {
         // 時刻
         val year = byteArrayToUIntLE(chunk.sliceArray(18..19)).toInt()
         val month = chunk[20].toInt()
@@ -26,7 +31,10 @@ class LocationData {
         val hour = chunk[22].toInt()
         val minute = chunk[23].toInt()
         val second = chunk[24].toInt()
-        val nanosecond = chunk[25].toInt() * 100 * 1000 * 1000
+
+        val subsecond = if (ver == DataVersion.BON4) 10 else 100;
+
+        val nanosecond = chunk[25].toInt() * subsecond * 1000 * 1000
         m_timestamp = LocalDateTime.of(year, month, dayOfMonth, hour, minute, second, nanosecond)
 
         // 座標

@@ -46,6 +46,8 @@ class MainActivity : AppCompatActivity() {
     private var m_sourceFileName: String? = null
     private var m_destinationFileName: String? = null
 
+    private var m_dataVersion: LocationData.DataVersion = LocationData.DataVersion.BON1;
+
     private fun openFile() {
         pickFile(getDefaultUri())
     }
@@ -122,15 +124,19 @@ class MainActivity : AppCompatActivity() {
     /// 開くファイルを設定
     private fun setSourceFile(uri: Uri) {
         Log.i("Main", "source uri=${uri}")
-        val filename = getContentFileName(uri)
+        val filename = getContentFileName(uri) as String
         Log.i("Main", "filename=${filename}")
         val textView = findViewById<TextView>(R.id.textView)
         textView.text = filename
-        if (filename?.substringAfterLast('.', "")?.uppercase() != "BON") {
+        val ext = filename.substringAfterLast('.', "").uppercase()
+        if (!ext.startsWith("BON")) {
             Log.e("Main", "invalid file extension")
             SimpleAlertDialog.Create(getString(R.string.error_invalid_ext))
                 .show(supportFragmentManager, SimpleAlertDialog::class.simpleName)
             return
+        }
+        if (ext == "BON4") {
+            m_dataVersion = LocationData.DataVersion.BON4
         }
         m_sourceFileUri = uri
         m_sourceFileName = filename
@@ -201,7 +207,7 @@ class MainActivity : AppCompatActivity() {
         var prevLocation: LocationData? = null
         val chunk = ByteArray(26)
         while (inputStream.read(chunk) >= 0) {
-            val location = LocationData(chunk, prevLocation)
+            val location = LocationData(chunk, prevLocation, m_dataVersion)
             prevLocation = location
             writer.write(location.getNmea())
             writer.newLine()
